@@ -1,9 +1,7 @@
 const express = require('express');
-const mysql = require("mysql");
 const cors = require('cors');
 const os = require('os');
-const fs = require('fs');
-const sqlite3 = require('sqlite3');
+const sqlite3 = require('sqlite3').verbose();
 
 const ifaces = os.networkInterfaces();
 let locatIp = '';
@@ -18,19 +16,10 @@ for (let dev in ifaces) {
     }
 }
 
-// const db = mysql.createPool({
-
-//     host: '127.0.0.1',
-
-//     user: 'root',
-
-//     password: '@xuewuqiushuang',
-
-//     database: 'farmer'
-// })
-
-let db = new sqlite3.Database(rootPath, (err) => {
-    if (err) throw err;
+let db = new sqlite3.Database("smartAgriculture.db3", (err) => {
+    if (err) {
+        throw err
+    };
     console.log('数据库连接')
 })
 
@@ -41,7 +30,7 @@ app.use(cors());
 app.use(express.static(__dirname + "/static"));
 
 app.get("/api/collecter", (req, res) => {
-    db.each(`select * from collecter`, (error, result) => {
+    db.all(`select * from collecter`, (error, result) => {
         if (!error) {
             res.send({
                 code: 200,
@@ -52,7 +41,7 @@ app.get("/api/collecter", (req, res) => {
 })
 
 app.get("/api/controller", (req, res) => {
-    db.each(`select * from controller`, (error, result) => {
+    db.all(`select * from controller`, (error, result) => {
         if (!error) {
             res.send({
                 code: 200,
@@ -63,7 +52,7 @@ app.get("/api/controller", (req, res) => {
 })
 
 app.get('/api/video', (req, res) => {
-    db.each(`select * from collecter where CAMERA_VIDEO is not null`, (error, result) => {
+    db.all(`select * from collecter where CAMERA_VIDEO is not null`, (error, result) => {
         if (!error) {
             res.send({
                 code: 200,
